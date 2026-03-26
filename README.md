@@ -1,20 +1,25 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+ # Revel - Premium Travel Search Platform
 
-# Run and deploy your AI Studio app
+Revel is a sophisticated travel search and booking platform designed to provide an elegant and seamless experience for finding flights, hotels, and car rentals. Focused on the South African travel market, it offers real-time data integration and a modern, responsive interface.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/73477311-650f-4634-87f1-91ed9a3d42a2
+- **Flight Search & Booking**: Compare flights from major South African airlines (SAA, Airlink, FlySafair, etc.) with real-time logo integration.
+- **Hotel Discovery**: Explore premium accommodation options across South Africa's top destinations.
+- **Car Rentals**: Browse luxury and performance vehicle rentals for your journey.
+- **Secure Authentication**: Integrated with Firebase Auth for secure Google sign-in.
+- **My Bookings**: A dedicated dashboard to track and manage your travel reservations in real-time.
+- **Responsive Design**: Optimized for both desktop and mobile devices with fluid animations.
 
-## Run Locally
+##  Tech Stack
 
-**Prerequisites:**  Node.js
+- **Frontend**: [React 19](https://react.dev/) with [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animations**: [Motion](https://motion.dev/) (motion/react)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Backend/Database**: [Firebase](https://firebase.google.com/) (Firestore & Authentication)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
 
+ 
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+ 
