@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required) - The user's unique identifier
+    //   - displayName: string (optional) - The user's display name
+    //   - email: string (required, email format) - The user's email address
+    //   - photoURL: string (optional, url format) - The URL of the user's profile photo
+    //   - role: string (required, enum: ['admin', 'user']) - The user's role
+    //   - createdAt: timestamp (optional) - When the user profile was created
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "17ncalane@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+        (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'role', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 &&
+             isValidEmail(data.email) &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() < 100)) &&
+             (!('photoURL' in data) || isValidUrl(data.photoURL)) &&
+             data.role in ['admin', 'user'];
+    }
+
+    function isValidBooking(data) {
+      return hasOnlyAllowedFields(['id', 'userId', 'flightId', 'airline', 'logo', 'origin', 'destination', 'departureTime', 'arrivalTime', 'price', 'passengers', 'travelDate', 'status', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.flightId is string &&
+             data.airline is string &&
+             (!('logo' in data) || isValidUrl(data.logo)) &&
+             data.origin is string &&
+             data.destination is string &&
+             data.price is number &&
+             data.passengers is number &&
+             data.travelDate is string &&
+             data.status in ['confirmed', 'cancelled'];
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
+                      isOwner(userId) && 
+                      request.resource.data.role == 'user';
+                      
+      allow update: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
+                      ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin());
+                      
+      allow delete: if isAdmin();
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAuthenticated() && isValidBooking(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin()) && isValidBooking(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}

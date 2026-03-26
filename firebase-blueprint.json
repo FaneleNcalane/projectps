@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Information about the authenticated user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique identifier for the user." },
+        "displayName": { "type": "string", "description": "The user's display name." },
+        "email": { "type": "string", "format": "email", "description": "The user's email address." },
+        "photoURL": { "type": "string", "format": "uri", "description": "The URL of the user's profile photo." },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "The user's role in the application." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the user profile was created." }
+      },
+      "required": ["uid", "email"]
+    },
+    "bookings": {
+      "title": "Booking",
+      "description": "Information about a flight booking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique identifier for the booking." },
+        "userId": { "type": "string", "description": "The user who made the booking." },
+        "flightId": { "type": "string", "description": "The flight being booked." },
+        "airline": { "type": "string", "description": "The airline for the flight." },
+        "logo": { "type": "string", "format": "uri", "description": "The URL of the airline logo." },
+        "origin": { "type": "string", "description": "The departure city." },
+        "destination": { "type": "string", "description": "The arrival city." },
+        "departureTime": { "type": "string", "description": "The time of departure." },
+        "arrivalTime": { "type": "string", "description": "The time of arrival." },
+        "price": { "type": "number", "description": "The price of the booking." },
+        "passengers": { "type": "number", "description": "The number of passengers." },
+        "travelDate": { "type": "string", "format": "date", "description": "The date of travel." },
+        "status": { "type": "string", "enum": ["confirmed", "cancelled"], "description": "The status of the booking." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the booking was made." }
+      },
+      "required": ["userId", "flightId", "airline", "origin", "destination", "price", "travelDate"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile documents."
+    },
+    "/bookings/{bookingId}": {
+      "schema": "bookings",
+      "description": "Flight booking documents."
+    }
+  }
+}
